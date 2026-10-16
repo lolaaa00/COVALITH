@@ -1,0 +1,1 @@
+{"name":"covalith","private":true,"version":"0.1.0","scripts":{"web:dev":"npm --prefix frontend run dev","web:build":"npm --prefix frontend run build","web:typecheck":"npm --prefix frontend run typecheck","preflight":"python tools/preflight.py"},"dependencies":{"genlayer":"0.39.1"}}

@@ -1,0 +1,15 @@
+node_modules/
+frontend/node_modules/
+frontend/.next/
+frontend/*.tsbuildinfo
+frontend/.env.local
+.env
+.env.local
+__pycache__/
+.pytest_cache/
+.venv/
+*.pyc
+.DS_Store
+deploy/deployments.json
+reports/runtime-*.json
+artifacts/

@@ -1,0 +1,22 @@
+name: Verify source
+on: [push, pull_request]
+jobs:
+  verify:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+          cache: npm
+          cache-dependency-path: |
+            package-lock.json
+            frontend/package-lock.json
+      - run: pip install -r requirements-dev.txt
+      - run: npm ci --no-audit --no-fund
+      - run: npm --prefix frontend ci --no-audit --no-fund
+      - run: genvm-lint download --version v0.2.12
+      - run: python tools/preflight.py
