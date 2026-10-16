@@ -97,6 +97,14 @@ The verifier requests source code with `status=finalized`, decodes base64, check
 
 The deployment script writes `frontend/.env.local` with the three verified contract addresses only after interactive confirmations. It does not create signing keys, run a background wallet, or invent transaction hashes.
 
+### Current Studionet deployment
+
+| Role | Finalized address |
+| --- | --- |
+| Registry | `0x95509D94C2a51E186430b10D804e2Fc284d39cE7` |
+| Risk engine | `0xa6859840f0916e80A07da0b8B03D70e2facf5002` |
+| Protection vault | `0x872f9d5A5CBa4F734a3fb35B2847C9e5e4491543` |
+
 ## End-to-end operating flow
 
 1. Connect an **injected EIP-1193** account on chain `61999` (no Snaps, WalletConnect, custodial wallet, wallet-specific SDK, or server signatures).
@@ -112,7 +120,7 @@ The UI distinguishes signed submission, accepted decision, finalized success and
 
 ## Current validation status
 
-Local Python syntax, React/TypeScript parser syntax, and isolated contract behavioral tests can be checked without network access. This workspace cannot fetch npm/PyPI package artifacts or contact Studionet, so SDK semantic lints, native Direct Mode, production build, contract source parity and actual live payment flow remain **unverified** until run on a connected engineering machine. Scripts fail closed instead of reporting an unperformed check as passing.
+The pinned local preflight and clean GitHub Actions run pass Python syntax, 51 isolated behavioral tests, 11 official Direct Mode tests, GenVM lint/validate/check/typecheck/schema for all contracts, TypeScript checks and the production frontend build. All three Studionet deployments reached `FINALIZED` with successful consensus, and the verifier confirmed exact deployed-source parity plus valid schemas. The external EOA withdrawal child-message delivery path and injected-wallet browser flow still require live manual testing; queued transfer state alone is not treated as proof of payment.
 
 The first release should be treated as experimental Testnet infrastructure, not production financial protection. Independent security review, active publisher verification, economic stress tests, child-transfer recovery analysis, front-end browser testing and successful live GEN execution are essential before the product is entrusted with significant capital.
 
