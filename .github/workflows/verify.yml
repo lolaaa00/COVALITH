@@ -19,4 +19,10 @@ jobs:
       - run: npm ci --no-audit --no-fund
       - run: npm --prefix frontend ci --no-audit --no-fund
       - run: genvm-lint download --version v0.2.12
+      # genlayer-test 0.29.0 uses its own cache and still looks for the legacy
+      # bundle name. Reuse the exact artifact already downloaded by the linter.
+      - run: |
+          mkdir -p "$HOME/.cache/gltest-direct"
+          cp "$HOME/.cache/genvm-linter/genvm-universal-v0.2.12.tar.xz" \
+             "$HOME/.cache/gltest-direct/genvm-universal-v0.2.12.tar.xz"
       - run: python tools/preflight.py
