@@ -44,6 +44,32 @@ def test_validator_detects_malicious_leader(env):
         env.engine.assess_depeg(a)
     assert env.engine.get_assessment_count()==0
 
+def test_depeg_validator_rejects_mismatched_source_root_before_persist(env):
+    asset=env.asset()
+    def attack(leader,validator):
+        proposed=dict(leader(),source_root='0'*64)
+        if not validator(env.gl.vm.Return(proposed)):
+            raise env.errors('validators rejected mismatched evidence commitment')
+        return proposed
+    env.gl.vm.run_nondet_unsafe=attack
+    with pytest.raises(env.errors,match='mismatched evidence commitment'):
+        env.engine.assess_depeg(asset)
+    assert env.engine.get_assessment_count()==0
+    assert env.engine.get_latest(asset,'DEPEG')==''
+
+def test_collateral_validator_rejects_mismatched_source_root_before_persist(env):
+    asset=env.asset()
+    def attack(leader,validator):
+        proposed=dict(leader(),source_root='f'*64)
+        if not validator(env.gl.vm.Return(proposed)):
+            raise env.errors('validators rejected mismatched evidence commitment')
+        return proposed
+    env.gl.vm.run_nondet_unsafe=attack
+    with pytest.raises(env.errors,match='mismatched evidence commitment'):
+        env.engine.assess_collateral(asset)
+    assert env.engine.get_assessment_count()==0
+    assert env.engine.get_latest(asset,'COLLATERAL')==''
+
 def test_latest_and_pagination(env):
     a=env.asset();env.engine.assess_depeg(a);env.engine.assess_collateral(a)
     assert json.loads(env.engine.get_latest(a,'DEPEG'))['kind']=='DEPEG'

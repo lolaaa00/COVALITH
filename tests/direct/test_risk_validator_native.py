@@ -37,6 +37,18 @@ def _market_mocks(vm, first=1.0, second=1.0):
     })
 
 
+def _collateral_mocks(vm):
+    vm.mock_web(r'issuer\.example', {
+        'status': 200, 'body': 'Issuer reports normal redemptions and fully available reserves.',
+    })
+    vm.mock_web(r'independent\.example', {
+        'status': 200, 'body': 'Independent review reports normal redemptions and adequate reserves.',
+    })
+    vm.mock_llm(r'Evaluate whether this collateral', json.dumps({
+        'event': 'NONE', 'issuer_excerpt': '', 'independent_excerpt': '',
+    }))
+
+
 def test_native_validator_rejects_forged_depeg(direct_deploy, direct_vm, direct_alice, monkeypatch):
     engine = direct_deploy('contracts/risk_engine.py', _sdk_address(direct_alice))
     instance = object.__getattribute__(engine, '_instance')
@@ -58,4 +70,28 @@ def test_native_validator_rejects_source_disagreement(direct_deploy, direct_vm, 
     _market_mocks(direct_vm, 1.0, 1.0)
     leader = {'status': 'TRIGGERED', 'direction': 'BELOW', 'a': 9700, 'b': 9700,
               'source_root': 'leader-observation'}
+    assert direct_vm.run_validator(leader_result=leader) is False
+
+
+def test_native_depeg_validator_rejects_mismatched_source_root(direct_deploy, direct_vm,
+                                                               direct_alice, monkeypatch):
+    engine = direct_deploy('contracts/risk_engine.py', _sdk_address(direct_alice))
+    instance = object.__getattribute__(engine, '_instance')
+    monkeypatch.setattr(type(instance), '_asset', lambda self, asset_id: _asset())
+    _market_mocks(direct_vm)
+    engine.assess_depeg(1)
+    leader = {'status': 'CLEAR', 'direction': 'NONE', 'a': 10000, 'b': 10000,
+              'source_root': '0' * 64}
+    assert direct_vm.run_validator(leader_result=leader) is False
+
+
+def test_native_collateral_validator_rejects_mismatched_source_root(direct_deploy, direct_vm,
+                                                                    direct_alice, monkeypatch):
+    engine = direct_deploy('contracts/risk_engine.py', _sdk_address(direct_alice))
+    instance = object.__getattribute__(engine, '_instance')
+    monkeypatch.setattr(type(instance), '_asset', lambda self, asset_id: _asset())
+    _collateral_mocks(direct_vm)
+    engine.assess_collateral(1)
+    leader = {'status': 'CLEAR', 'event': 'NONE', 'issuer_excerpt': '',
+              'independent_excerpt': '', 'source_root': 'f' * 64}
     assert direct_vm.run_validator(leader_result=leader) is False

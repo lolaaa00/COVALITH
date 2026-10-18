@@ -140,6 +140,8 @@ class RiskEngine(gl.Contract):
                 return False
             if p.get('status') != own['status'] or p.get('direction') != own['direction']:
                 return False
+            if p.get('source_root') != own['source_root']:
+                return False
             if own['status'] == 'UNKNOWN' and own['a'] == 0 and own['b'] == 0:
                 return p.get('a') == 0 and p.get('b') == 0
             if any(not isinstance(p.get(k), int) or abs(p[k] - own[k]) > 30 for k in ('a', 'b')):
@@ -191,6 +193,8 @@ class RiskEngine(gl.Contract):
             if not isinstance(proposed, dict):
                 return False
             if proposed.get('status') != independently['status'] or proposed.get('event') != independently['event']:
+                return False
+            if proposed.get('source_root') != independently['source_root']:
                 return False
             if independently['status'] == 'TRIGGERED':
                 try:

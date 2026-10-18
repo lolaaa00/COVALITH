@@ -102,8 +102,8 @@ The deployment script writes `frontend/.env.local` with the three verified contr
 | Role | Finalized address |
 | --- | --- |
 | Registry | `0x95509D94C2a51E186430b10D804e2Fc284d39cE7` |
-| Risk engine | `0xa6859840f0916e80A07da0b8B03D70e2facf5002` |
-| Protection vault | `0x872f9d5A5CBa4F734a3fb35B2847C9e5e4491543` |
+| Risk engine | `0x85800863659F41e878a7C0B0765C53420767ca1A` |
+| Protection vault | `0xFd4AF7b7092cf981b0fBf56aA83Ad8033f83ba3A` |
 
 ## End-to-end operating flow
 
